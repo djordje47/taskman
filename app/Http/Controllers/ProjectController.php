@@ -49,11 +49,12 @@ class ProjectController extends Controller
   }
 
   /**
-   * @param Project $project
+   * @param int $projectId
    * @return JsonResponse
    */
-  public function markAsCompleted(Project $project)
+  public function markAsCompleted(int $projectId)
   {
+    $project = Project::find($projectId);
     $project->is_completed = true;
     $project->update();
 

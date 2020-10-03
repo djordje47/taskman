@@ -100,7 +100,7 @@ class Project extends Component {
                 </div>
                 <div className="card-body">
                   <p>{project.description}</p>
-                  <button className="btn btn-primary btn-sm">
+                  <button className="btn btn-primary btn-sm" onClick={this.markProjectAsCompleted}>
                     Mark as completed
                   </button>
                   <hr/>
