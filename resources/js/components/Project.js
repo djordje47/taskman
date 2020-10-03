@@ -1,146 +1,131 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios'
 
-class Project extends Component {
-  constructor(props) {
-    super(props);
-    this.markProjectAsCompleted = this.markProjectAsCompleted.bind(this);
-    this.handleFieldChange = this.handleFieldChange.bind(this);
-    this.handleAddNewTask = this.handleAddNewTask.bind(this);
-    this.hasErrorFor = this.hasErrorFor.bind(this);
-    this.renderErrorFor = this.renderErrorFor.bind(this);
-    this.state = {
-      project: {},
-      tasks: [],
-      title: '',
-      errors: []
-    }
-  }
-
-  componentDidMount() {
-    const projectId = this.props.match.params.id;
+const Project = (props) => {
+  const [project, setProject] = useState({});
+  const [tasks, setTasks] = useState([]);
+  const [title, setTitle] = useState('');
+  const [errors, setErrors] = useState([]);
+  useEffect(() => {
+    const projectId = props.match.params.id;
     axios.get(`/api/projects/${projectId}`).then(response => {
-      this.setState({
-        project: response.data,
-        tasks: response.data.tasks
-      })
-    })
+      setProject(response.data);
+      setTasks(response.data.tasks);
+    });
+  }, []);
+
+  /**
+   * Marks project as completed
+   */
+  const markProjectAsCompleted = () => {
+    const {history} = props
+    axios.put(`/api/projects/${project.id}`).then(response => history.push('/'))
   }
 
-  markProjectAsCompleted() {
-    const {history} = this.props
-    axios.put(`/api/projects/${this.state.project.id}`).then(response => history.push('/'))
-  }
-
-  handleFieldChange(event) {
-    this.setState({
-      title: event.target.value
-    })
-  }
-
-  handleAddNewTask(event) {
+  /**
+   * Adds new task
+   * @param event
+   */
+  const handleAddNewTask = event => {
     event.preventDefault()
-
-    const task = {
-      title: this.state.title,
-      project_id: this.state.project.id
-    }
-
-    axios.post('/api/tasks', task)
+    axios.post('/api/tasks', {
+      title,
+      project_id: project.id
+    })
     .then(response => {
-      // clear form input
-      this.setState({
-        title: ''
-      })
-      // add new task to list of tasks
-      this.setState(prevState => ({
-        tasks: [...prevState.tasks, response.data]
-      }))
+      setTitle('');
+      setTasks([...tasks, response.data]);
     })
     .catch(error => {
-      this.setState({
-        errors: error.response.data.errors
-      })
+      setErrors(error.response.data.errors);
     })
   }
 
-  hasErrorFor(field) {
-    return !!this.state.errors[field]
+  /**
+   * Checks for errors
+   * @param field
+   * @returns {boolean}
+   */
+  const hasErrorFor = field => {
+    return !!errors[field]
   }
-
-  renderErrorFor(field) {
-    if (this.hasErrorFor(field)) {
+  /**
+   * Renders the errors
+   * @param field
+   * @returns {JSX.Element}
+   */
+  const renderErrorFor = field => {
+    if (hasErrorFor(field)) {
       return (
           <span className='invalid-feedback'>
-            <strong>{this.state.errors[field][0]}</strong>
+            <strong>{errors[field][0]}</strong>
           </span>
       )
     }
   }
 
-  handleMarkTaskAsCompleted(taskId) {
+  /**
+   * Marks task as completed
+   * @param taskId
+   */
+  const handleMarkTaskAsCompleted = taskId => {
     axios.put(`/api/tasks/${taskId}`).then(response => {
-      this.setState(prevState => ({
-        tasks: prevState.tasks.filter(task => {
-          return task.id !== taskId
-        })
-      }))
-    })
+      setTasks(tasks.filter(task => {
+        return task.id !== taskId
+      }));
+    });
   }
 
-  render() {
-    const {tasks, project} = this.state;
-    return (
-        <div className="container py-4">
-          <div className="row justify-content-center">
-            <div className="col-md-8">
-              <div className="card">
-                <div className="card-header">
-                  {project.name}
-                </div>
-                <div className="card-body">
-                  <p>{project.description}</p>
-                  <button className="btn btn-primary btn-sm" onClick={this.markProjectAsCompleted}>
-                    Mark as completed
-                  </button>
-                  <hr/>
-                  <form onSubmit={this.handleAddNewTask}>
-                    <div className="input-group">
-                      <input
-                          type="text"
-                          name="title"
-                          className={`form-control ${this.hasErrorFor('title') ? 'is-invalid' : ''}`}
-                          placeholder="Task title"
-                          autoComplete="off"
-                          value={this.state.title}
-                          onChange={this.handleFieldChange}
-                      />
-                      <div className='input-group-append'>
-                        <button className='btn btn-primary'>Add</button>
-                      </div>
-                      {this.renderErrorFor('title')}
+  return (
+      <div className="container py-4">
+        <div className="row justify-content-center">
+          <div className="col-md-8">
+            <div className="card">
+              <div className="card-header">
+                {project.name}
+              </div>
+              <div className="card-body">
+                <p>{project.description}</p>
+                <button className="btn btn-primary btn-sm" onClick={markProjectAsCompleted}>
+                  Mark as completed
+                </button>
+                <hr/>
+                <form onSubmit={handleAddNewTask}>
+                  <div className="input-group">
+                    <input
+                        type="text"
+                        name="title"
+                        className={`form-control ${hasErrorFor('title') ? 'is-invalid' : ''}`}
+                        placeholder="Task title"
+                        autoComplete="off"
+                        value={title}
+                        onChange={event => setTitle(event.target.value)}
+                    />
+                    <div className='input-group-append'>
+                      <button className='btn btn-primary'>Add</button>
                     </div>
-                  </form>
-                  <ul className="list-group mt-3">
-                    {tasks.map(task => (
-                        <li className="list-group-item d-flex justify-content-between align-items-center"
-                            key={task.id}>
-                          {task.title}
-                          <button
-                              className='btn btn-primary btn-sm'
-                              onClick={this.handleMarkTaskAsCompleted.bind(this, task.id)}>
-                            Mark as completed
-                          </button>
-                        </li>
-                    ))}
-                  </ul>
-                </div>
+                    {renderErrorFor('title')}
+                  </div>
+                </form>
+                <ul className="list-group mt-3">
+                  {tasks.map(task => (
+                      <li className="list-group-item d-flex justify-content-between align-items-center"
+                          key={task.id}>
+                        {task.title}
+                        <button
+                            className='btn btn-primary btn-sm'
+                            onClick={event => handleMarkTaskAsCompleted(task.id)}>
+                          Mark as completed
+                        </button>
+                      </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
         </div>
-    );
-  }
+      </div>
+  );
 }
 
 export default Project;
