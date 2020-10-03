@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios'
+import TaskList from "./tasks/TaskList";
 
 const Project = (props) => {
   const [project, setProject] = useState({});
@@ -107,19 +108,7 @@ const Project = (props) => {
                     {renderErrorFor('title')}
                   </div>
                 </form>
-                <ul className="list-group mt-3">
-                  {tasks.map(task => (
-                      <li className="list-group-item d-flex justify-content-between align-items-center"
-                          key={task.id}>
-                        {task.title}
-                        <button
-                            className='btn btn-primary btn-sm'
-                            onClick={event => handleMarkTaskAsCompleted(task.id)}>
-                          Mark as completed
-                        </button>
-                      </li>
-                  ))}
-                </ul>
+                <TaskList tasks={tasks} markTaskAsCompleted={handleMarkTaskAsCompleted}/>
               </div>
             </div>
           </div>
