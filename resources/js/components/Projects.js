@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import axios from 'axios';
 import {Link} from "react-router-dom";
 
@@ -21,14 +21,16 @@ const Projects = () => {
                 </Link>
                 <ul className="list-group list-group-flush">
                   {projects.map(project => (
-                      <Link to={`/${project.id}`}
-                            key={project.id}
-                            className="d-flex flex-row justify-content-between align-content-center align-items-center">
-                        {project.name}
-                        <span className="badge badge-primary badge-pill">
+                      <Fragment key={project.id}>
+                        <Link to={`/${project.id}`}
+                              className="d-flex flex-row justify-content-between align-content-center align-items-center">
+                          {project.name}
+                          <span className="badge badge-primary badge-pill">
                             {project.tasks_count}
                           </span>
-                      </Link>
+                        </Link>
+                        <small className="text-muted">{project.description}</small>
+                      </Fragment>
                   ))}
                 </ul>
               </div>
