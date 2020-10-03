@@ -31,6 +31,7 @@ class CreateProject extends Component {
                       <input type="text"
                              id="name"
                              name="name"
+                             autoComplete="off"
                              value={this.state.name}
                              onChange={this.handleFieldChange}
                              className={`form-control ${this.hasErrorFor('name') ? 'is-invalid' : ''}`}/>

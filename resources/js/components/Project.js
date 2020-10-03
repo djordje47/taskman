@@ -111,6 +111,7 @@ class Project extends Component {
                           name="title"
                           className={`form-control ${this.hasErrorFor('title') ? 'is-invalid' : ''}`}
                           placeholder="Task title"
+                          autoComplete="off"
                           value={this.state.title}
                           onChange={this.handleFieldChange}
                       />

@@ -33,7 +33,8 @@ class Projects extends Component {
                   <ul className="list-group list-group-flush">
                     {projects.map(project => (
                         <Link to={`/${project.id}`}
-                              key={project.id}>
+                              key={project.id}
+                              className="d-flex flex-row justify-content-between align-content-center align-items-center">
                           {project.name}
                           <span className="badge badge-primary badge-pill">
                             {project.tasks_count}

@@ -70017,6 +70017,7 @@ var CreateProject = /*#__PURE__*/function (_Component) {
         type: "text",
         id: "name",
         name: "name",
+        autoComplete: "off",
         value: this.state.name,
         onChange: this.handleFieldChange,
         className: "form-control ".concat(this.hasErrorFor('name') ? 'is-invalid' : '')
@@ -70323,6 +70324,7 @@ var Project = /*#__PURE__*/function (_Component) {
         name: "title",
         className: "form-control ".concat(this.hasErrorFor('title') ? 'is-invalid' : ''),
         placeholder: "Task title",
+        autoComplete: "off",
         value: this.state.title,
         onChange: this.handleFieldChange
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
@@ -70442,7 +70444,8 @@ var Projects = /*#__PURE__*/function (_Component) {
       }, projects.map(function (project) {
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Link"], {
           to: "/".concat(project.id),
-          key: project.id
+          key: project.id,
+          className: "d-flex flex-row justify-content-between align-content-center align-items-center"
         }, project.name, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
           className: "badge badge-primary badge-pill"
         }, project.tasks_count));
